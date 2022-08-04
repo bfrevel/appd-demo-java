@@ -1,0 +1,17 @@
+spring:
+
+  rabbitmq:
+    host: localhost
+    custom:
+      order-queue: order-queue
+
+services:
+  customer:
+    host: localhost
+    port: 8010
+  product:
+    host: localhost
+    port: 8020
+
+server:
+  port : 8030

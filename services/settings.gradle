@@ -1,0 +1,6 @@
+rootProject.name = 'appd-demo-java'
+
+include 'load'
+include 'customer'
+include 'product'
+include 'order'

@@ -1,0 +1,13 @@
+services:
+  customer:
+    host: customer-service
+    port: 8080
+  product:
+    host: product-service
+    port: 8080
+  order:
+    host: order-service
+    port: 8080
+
+server:
+  port : 8080

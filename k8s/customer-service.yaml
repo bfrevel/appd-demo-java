@@ -1,0 +1,77 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-postgres
+spec:
+  selector:
+    matchLabels:
+      app: customer-postgres
+  template:
+    metadata:
+      labels:
+        app: customer-postgres
+    spec:
+      containers:
+        - name: customer-postgres
+          image: postgres:14.2-alpine
+          # https://hub.docker.com/_/postgres
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: postgrespw
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-postgres
+spec:
+  selector:
+    app: customer-postgres
+  type: ClusterIP
+  ports:
+    - name: jdbc
+      port: 5432
+      targetPort: 5432
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-service
+  labels:
+    appd-instr: enabled
+spec:
+  selector:
+    matchLabels:
+      app: customer-service
+  template:
+    metadata:
+      labels:
+        app: customer-service
+    spec:
+      containers:
+        - name: customer-service
+          image: appdynamics/demo/java/customer
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Dspring.profiles.active=k8s"
+          ports:
+            - name: http
+              containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-service
+spec:
+  selector:
+    app: customer-service
+  ports:
+    - targetPort: http
+      port: 8080

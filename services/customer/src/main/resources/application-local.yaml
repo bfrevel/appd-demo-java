@@ -1,0 +1,15 @@
+spring:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    platform: postgres
+    show-sql: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5412/postgres
+    username: postgres
+    password: postgrespw
+
+server:
+  port : 8010

@@ -1,0 +1,15 @@
+spring:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    platform: postgres
+    show-sql: true
+
+  datasource:
+    url: jdbc:postgresql://product-postgres:5432/postgres
+    username: postgres
+    password: postgrespw
+
+server:
+  port : 8080

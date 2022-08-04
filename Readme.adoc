@@ -1,0 +1,102 @@
+= AppDynamics OpenTelemetry Java Demo
+:toc: 
+:sectnums:
+
+== Demo Application Architecture
+
+
+[ditaa]
+----
+
+
+/=-----\
+|      |
+| load |:-------------------------+
+|      |                          |
+\---+--/                          |
+    :                             |
+    |                             |
+    | HTTP                        |
+    |                             |
+    v                             v
++---------------+              +------------------+           +-------------------+
+|               |     HTTP     |                  |   JDBC    | {s}               |
+|               +------------->| customer-service +---------->| customer-postgres |
+| order-service |              |                  |           |                   |
+|               +--+           +------------------+           +-------------------+
+|               |  |
++---------------+  |
+                   |
+                   |
+                   |           +------------------+            +-------------------+
+                   |   HTTP    |                  |    JDBC    | {s}               |
+                   +---------->| product-service  +----------->| product-postgres  |
+                               |                  |            |                   |
+                               +------------------+            +-------------------+
+       
+----
+
+== Java Applications
+
+=== Build Application
+
+.Gradle Build
+[source, sh]
+----
+./gradlew -p services clean bootJar
+----
+
+
+=== Download AppDynamics Java Agent
+
+Download the agent and unzip the agent to `libs/appd-java-agent`
+
+=== Prepare Environment
+
+.Create postgres databases for customer-service and product-service
+[source, sh]
+----
+# start customer-postgres
+docker run \
+  -d \
+  --name customer-postgres \
+  -e POSTGRES_PASSWORD=postgrespw \
+  -p 5412:5432 \
+  postgres:14.4-alpine
+
+# start product-postgres
+docker run \
+  -d \
+  --name product-postgres \
+  -e POSTGRES_PASSWORD=postgrespw \
+  -p 5422:5432 \
+  postgres:14.4-alpine
+
+# start rabbitmq
+docker run \
+  -d \
+  --name rabbitmq \
+  -p 5672:5672 \
+  rabbitmq:3.10.6-alpine
+----
+
+.Configure AppDynamics Environment
+[source, sh]
+----
+export APPDYNAMICS_CONTROLLER_HOST_NAME={{controller-host-name}}
+export APPDYNAMICS_CONTROLLER_PORT={{controller-host-port}}
+export APPDYNAMICS_CONTROLLER_SSL_ENABLED={{controller-ssl-enabled}}
+export APPDYNAMICS_AGENT_ACCOUNT_NAME={{agent-account-name}}
+export APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY={{agent-account-access-key}}
+export APPDYNAMICS_AGENT_APPLICATION_NAME=appd-demo-java
+export APPDYNAMICS_AGENT_LOCATION=${PWD}/lib/appd-java-agent/javaagent.jar
+----
+
+=== Start and Stop Java Applications
+ 
+[source, sh]
+----
+./start.sh
+
+./stop.sh
+----

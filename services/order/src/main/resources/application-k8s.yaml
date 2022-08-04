@@ -1,0 +1,17 @@
+spring:
+
+  rabbitmq:
+    host: rabbitmq
+    custom:
+      order-queue: order-queue
+
+services:
+  customer:
+    host: customer-service
+    port: 8080
+  product:
+    host: product-service
+    port: 8080
+
+server:
+  port : 8080
